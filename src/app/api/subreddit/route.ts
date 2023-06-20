@@ -26,17 +26,19 @@ export async function POST(req: Request) {
     }
 
     // create subreddit and associate it with the user
+    // @ts-expect-error
+    const userId=session.user.id;
     const subreddit = await db.subreddit.create({
       data: {
         name,
-        creatorId: session.user.id,
+        creatorId: userId,
       },
     })
 
     // creator also has to be subscribed
     await db.subscription.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         subredditId: subreddit.id,
       },
     })
