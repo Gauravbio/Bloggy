@@ -1,12 +1,13 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/Command";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Prisma, Subreddit } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Users } from "lucide-react";
 import debounce from "lodash.debounce";
+import { useOnClickOutside } from "@/hooks/use-on-click-outside";
 
 const SearchBar = () => {
 
@@ -33,8 +34,18 @@ const SearchBar = () => {
     },[])
 
     const router=useRouter();
+    const commandRef=useRef<HTMLDivElement>(null);
+
+    useOnClickOutside(commandRef,()=> {
+        setInput('')
+    })
+    const pathname=usePathname();
+
+    useEffect(()=> {
+        setInput('')
+    },[pathname])
   return (
-    <Command className="relative rounded-lg border max-w-lg z-50 overflow-visible">
+    <Command ref={commandRef} className="relative rounded-lg border max-w-lg z-50 overflow-visible">
       <CommandInput
       isLoading={isFetching}
       value={input}
